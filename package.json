@@ -1,12 +1,10 @@
 {
-  "name": "react-cryptocharts",
-  "version": "0.1",
+  "name": "react-cryptocharts-v2",
+  "version": "1.0.0",
   "description": "Highly customizable stock charts with ReactJS and d3",
   "main": "index.js",
   "module": "es/index.js",
-  "author": {
-    "name": "TruongNQ"
-  },
+  "author": "TruongNQ",
   "homepage": "http://bitscreener.com/",
   "license": "MIT",
   "dependencies": {
@@ -24,6 +22,8 @@
     "debug": "^3.1.0",
     "lodash.flattendeep": "^4.4.0",
     "prop-types": "^15.6.0",
+    "react": "^15.7.0",
+    "react-dom": "^15.7.0",
     "save-svg-as-png": "^1.4.5"
   },
   "peerDependencies": {
@@ -51,16 +51,20 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/rrag/react-stockcharts.git"
+    "url": "git+https://github.com/rrag/react-stockcharts.git"
   },
   "bugs": {
     "url": "https://github.com/rrag/react-stockcharts/issues"
   },
   "maintainers": [
-    {
-      "name": "rrag",
-      "email": "ragunath.ramaswamy@gmail.com"
-    }
+    "rrag <ragunath.ramaswamy@gmail.com>"
   ],
-  "esnext": "es/index.js"
+  "esnext": "es/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
