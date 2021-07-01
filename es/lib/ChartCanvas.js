@@ -309,6 +309,7 @@ var ChartCanvas = function (_Component) {
 
 		_this.handleMouseMove = _this.handleMouseMove.bind(_this);
 		_this.handleTouchMove = _this.handleTouchMove.bind(_this);
+		_this.handleTouchStart = _this.handleTouchStart.bind(_this);
 		_this.handleMouseEnter = _this.handleMouseEnter.bind(_this);
 		_this.handleMouseLeave = _this.handleMouseLeave.bind(_this);
 		_this.handleZoom = _this.handleZoom.bind(_this);
@@ -958,6 +959,45 @@ var ChartCanvas = function (_Component) {
 		}
 	},
 	{
+		key: "handleTouchStart",
+		value: function handleTouchStart(mouseXY, inputType, e) {
+			var _this5 = this;
+			if (!this.waitingForAnimationFrame) {
+				this.waitingForAnimationFrame = true;
+
+				var _state6 = this.state,
+					chartConfig = _state6.chartConfig,
+					plotData = _state6.plotData,
+					xScale = _state6.xScale,
+					xAccessor = _state6.xAccessor;
+
+				var currentCharts = getCurrentCharts(chartConfig, mouseXY);
+				var currentItem = getCurrentItem(xScale, xAccessor, mouseXY, plotData);
+				this.triggerEvent("touchstart", {
+					show: true,
+					mouseXY: mouseXY,
+					// prevMouseXY is used in interactive components
+					prevMouseXY: this.prevMouseXY,
+					currentItem: currentItem,
+					currentCharts: currentCharts
+				}, e);
+
+				this.prevMouseXY = mouseXY;
+				this.mutableState = {
+					mouseXY: mouseXY,
+					currentItem: currentItem,
+					currentCharts: currentCharts
+				};
+
+				requestAnimationFrame(function () {
+					_this5.clearMouseCanvas();
+					_this5.draw({ trigger: "touchstart" });
+					_this5.waitingForAnimationFrame = false;
+				});
+			}
+		}
+	},
+	{
 		key: "handleMouseLeave",
 		value: function handleMouseLeave(e) {
 			this.triggerEvent("mouseleave", { show: false }, e);
@@ -1299,7 +1339,7 @@ var ChartCanvas = function (_Component) {
 							onMouseDown: this.handleMouseDown,
 							onMouseMove: this.handleMouseMove,
 							onTouchMove: this.handleTouchMove,
-							onTouchMove: this.handleTouchMove,
+							onTouchStart: this.handleTouchStart,
 							onMouseEnter: this.handleMouseEnter,
 							onMouseLeave: this.handleMouseLeave,
 
@@ -1311,7 +1351,8 @@ var ChartCanvas = function (_Component) {
 							onPinchZoom: this.handlePinchZoom,
 							onPinchZoomEnd: this.handlePinchZoomEnd,
 							onPan: this.handlePan,
-							onPanEnd: this.handlePanEnd
+							onPanEnd: this.handlePanEnd,
+							isDetailMobile: this.props.isDetailMobile
 						}),
 						React.createElement(
 							"g",

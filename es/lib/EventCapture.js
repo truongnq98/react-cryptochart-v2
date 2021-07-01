@@ -380,71 +380,82 @@ var EventCapture = function (_Component) {
 			var _props8 = this.props,
 				panEnabled = _props8.pan,
 				chartConfig = _props8.chartConfig,
-				onMouseMove = _props8.onMouseMove;
+				onMouseMove = _props8.onMouseMove,
+				onTouchStart = _props8.onTouchStart,
+				isDetailMobile = _props8.isDetailMobile;
+
 			var _props9 = this.props,
 				xScale = _props9.xScale,
 				onPanEnd = _props9.onPanEnd;
-			if (e.touches.length === 1) {
 
-				this.panHappened = false;
-				var touchXY = touchPosition(getTouchProps(e.touches[0]), e);
-				// onMouseMove(touchXY, "touch", e);
-				if (panEnabled) {
-					var currentCharts = getCurrentCharts(chartConfig, touchXY);
-
-					this.setState({
-						panInProgress: true,
-						panStart: {
-							panStartXScale: xScale,
-							panOrigin: touchXY,
-							chartsToPan: currentCharts
-						}
-					});
-
-					onMouseMove(touchXY, "touch", e);
-
-					var win = d3Window(this.node);
-					select(win).on(TOUCHMOVE, this.handlePan, false).on(TOUCHEND, this.handlePanEnd, false);
+			if (isDetailMobile) {
+				if (e.touches.length >= 1) {
+					var touchXY = touchPosition(getTouchProps(e.touches[0]), e);
+					onTouchStart(touchXY, "touch", e);
 				}
-			} else if (e.touches.length === 2) {
-				// pinch zoom begin
-				// do nothing pinch zoom is handled in handleTouchMove
-				var _state = this.state,
-					panInProgress = _state.panInProgress,
-					panStart = _state.panStart;
+			} else {
+				if (e.touches.length === 1) {
+					this.panHappened = false;
+					var touchXY = touchPosition(getTouchProps(e.touches[0]), e);
+					// onMouseMove(touchXY, "touch", e);
+					if (panEnabled) {
+						var currentCharts = getCurrentCharts(chartConfig, touchXY);
 
+						this.setState({
+							panInProgress: true,
+							panStart: {
+								panStartXScale: xScale,
+								panOrigin: touchXY,
+								chartsToPan: currentCharts
+							}
+						});
 
-				if (panInProgress && panEnabled && onPanEnd) {
-					var panStartXScale = panStart.panStartXScale,
-						panOrigin = panStart.panOrigin,
-						chartsToPan = panStart.chartsToPan;
+						onMouseMove(touchXY, "touch", e);
 
-
-					var _win2 = d3Window(this.node);
-					select(_win2).on(MOUSEMOVE, this.mouseInside ? this.handleMouseMove : null).on(MOUSEUP, null).on(TOUCHMOVE, this.handlePinchZoom, false).on(TOUCHEND, this.handlePinchZoomEnd, false);
-
-					var touch1Pos = touchPosition(getTouchProps(e.touches[0]), e);
-					var touch2Pos = touchPosition(getTouchProps(e.touches[1]), e);
-
-					if (this.panHappened
-						// && !this.contextMenuClicked
-						&& panEnabled && onPanEnd) {
-
-						onPanEnd(this.lastNewPos, panStartXScale, panOrigin, chartsToPan, e);
+						var win = d3Window(this.node);
+						select(win).on(TOUCHMOVE, this.handlePan, false).on(TOUCHEND, this.handlePanEnd, false);
 					}
+				} else if (e.touches.length === 2) {
+					// pinch zoom begin
+					// do nothing pinch zoom is handled in handleTouchMove
+					var _state = this.state,
+						panInProgress = _state.panInProgress,
+						panStart = _state.panStart;
 
-					this.setState({
-						panInProgress: false,
-						pinchZoomStart: {
-							xScale: xScale,
-							touch1Pos: touch1Pos,
-							touch2Pos: touch2Pos,
-							range: xScale.range(),
-							chartsToPan: chartsToPan
+
+					if (panInProgress && panEnabled && onPanEnd) {
+						var panStartXScale = panStart.panStartXScale,
+							panOrigin = panStart.panOrigin,
+							chartsToPan = panStart.chartsToPan;
+
+
+						var _win2 = d3Window(this.node);
+						select(_win2).on(MOUSEMOVE, this.mouseInside ? this.handleMouseMove : null).on(MOUSEUP, null).on(TOUCHMOVE, this.handlePinchZoom, false).on(TOUCHEND, this.handlePinchZoomEnd, false);
+
+						var touch1Pos = touchPosition(getTouchProps(e.touches[0]), e);
+						var touch2Pos = touchPosition(getTouchProps(e.touches[1]), e);
+
+						if (this.panHappened
+							// && !this.contextMenuClicked
+							&& panEnabled && onPanEnd) {
+
+							onPanEnd(this.lastNewPos, panStartXScale, panOrigin, chartsToPan, e);
 						}
-					});
+
+						this.setState({
+							panInProgress: false,
+							pinchZoomStart: {
+								xScale: xScale,
+								touch1Pos: touch1Pos,
+								touch2Pos: touch2Pos,
+								range: xScale.range(),
+								chartsToPan: chartsToPan
+							}
+						});
+					}
 				}
 			}
+
 		}
 	}, {
 		key: "handleTouchMove",
